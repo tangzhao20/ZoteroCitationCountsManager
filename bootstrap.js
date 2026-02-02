@@ -11,8 +11,7 @@ async function startup({ id, version, rootURI }) {
       "citationcounts-preference-pane-label"
     ),
     image: rootURI + 'icons/icon.png',
-    src: "preferences.xhtml",
-    scripts: ["preferences.js"],
+    src: "preferences.xhtml"
   });
 
   await Zotero.ItemTreeManager.registerColumns({
@@ -68,3 +67,4 @@ function uninstall() {
 function install() {
 
 }
+
