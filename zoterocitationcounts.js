@@ -385,6 +385,25 @@ ZoteroCitationCounts = {
     );
   },
 
+
+  /**
+   * Remove citation counts from the Items "extra" field.
+   */
+  _removeCitationCount: function (item) {
+    const pattern = /^(\d+ citations|Citations:)/i;
+    const extra = item.getField("extra");
+    if (!extra) return;
+
+    const lines = extra.split("\n");
+
+    const newLines = lines.filter((line) => !pattern.test(line));
+
+    if (lines.length !== newLines.length) {
+      item.setField("extra", newLines.join("\n"));
+      item.saveTx();
+    }
+  },
+
   /**
    * Insert the retrieve citation count into the Items "extra" field.
    * Ref: https://www.zotero.org/support/kb/item_types_and_fields#citing_fields_from_extra
@@ -480,17 +499,21 @@ ZoteroCitationCounts = {
 
         return [count, `${apiName}/DOI`];
       } catch (error) {
-        if (useTitleFallback && apiName == 'Crossref') {
-          try {
-            const title = item.getField('title');
-            const count = await this._sendRequest(
-              this._crossrefUrlByTitle(title, "crossref"),
-              this._crossrefCallbackByTitle
-            );
+        if (apiName == 'Crossref') {
+          if (useTitleFallback) {
+            try {
+              const title = item.getField('title');
+              const count = await this._sendRequest(
+                this._crossrefUrlByTitle(title, "crossref"),
+                this._crossrefCallbackByTitle
+              );
 
-            return [count, `${apiName}/title`];
-          } catch (error) {
-            errorMessage = error.message;
+              return [count, `${apiName}/title`];
+            } catch (error) {
+              errorMessage = error.message;
+            }
+          } else {
+            this._removeCitationCount(item);
           }
         }
       }
@@ -516,17 +539,21 @@ ZoteroCitationCounts = {
 
         return [count, `${apiName}/arXiv`];
       } catch (error) {
-        if (useTitleFallback && apiName == 'Crossref') {
-          try {
-            const title = item.getField('title');
-            const count = await this._sendRequest(
-              this._crossrefUrlByTitle(title, "crossref"),
-              this._crossrefCallbackByTitle
-            );
+        if (apiName == 'Crossref') {
+          if (useTitleFallback) {
+            try {
+              const title = item.getField('title');
+              const count = await this._sendRequest(
+                this._crossrefUrlByTitle(title, "crossref"),
+                this._crossrefCallbackByTitle
+              );
 
-            return [count, `${apiName}/title`];
-          } catch (error) {
-            errorMessage = error.message;
+              return [count, `${apiName}/title`];
+            } catch (error) {
+              errorMessage = error.message;
+            }
+          } else {
+            this._removeCitationCount(item);
           }
         }
       }
