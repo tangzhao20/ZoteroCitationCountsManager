@@ -210,6 +210,7 @@ ZoteroCitationCounts = {
       {
         "data-l10n-id": "citationcounts-itemmenu-retrieve-title",
         class: "menu-iconic",
+        image: this.rootURI + "icons/icon.png",
       },
       "zotero-itemmenu"
     );
